@@ -1,14 +1,9 @@
 using Common;
+using WebFramework.CustomMapping;
+using WebFramework.Configuration;
 using System.Reflection;
 using WebFramework.Cors;
 using WebFramework.Swagger;
-using WebFramework.Middlewares;
-using WebFramework.CustomMapping;
-using WebFramework.Configuration;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,20 +34,18 @@ builder.Services.AddSwagger(projectName);
 builder.Services.AddCustomeWebCors();
 
 var app = builder.Build();
-app.UseSwaggerAndUI();
 
-app.IntializeDatabase();
-app.UseCustomExceptionHandler();
-app.UseHsts(app.Environment);
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
 app.UseHttpsRedirection();
-app.UseElmahCore(siteSettings);
-app.UseRouting();
-app.UseMvc();
-app.UseCors();
-app.UseHttpsRedirection();
-app.UseAuthentication();
+
 app.UseAuthorization();
-app.UseStaticFiles();
+
 app.MapControllers();
 
 app.Run();
